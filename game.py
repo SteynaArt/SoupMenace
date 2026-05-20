@@ -38,9 +38,15 @@ KNIFE_APPARTION = (5, 9) # enemy boxes appear every 2 to 5 second rendomly
 next_knife_time = randint(KNIFE_APPARTION[0], KNIFE_APPARTION[1])  #Chooses random starting spawn time
 knifes = []
 
-BOX_APPARTION = (6, 10)
+BOX_APPARTION = (2, 8)
 next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 boxes = []
+
+# Pot / Pots list init
+POT_APPARTION = (2, 5)
+pot = Actor("pot", anchor=('left', 'bottom'))
+pot.pos = (800, GROUND)
+pots = []
 
 #---------------------------- hero initialisation-------------------------
 hero = Actor("leek1", anchor=('middle', 'bottom')) # here leek1 is starting image
@@ -59,10 +65,6 @@ def animate_hero():#Defines a function that changes the hero’s image
 
 clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
 
-# Pots init
-pot = Actor("pot", anchor=('left', 'bottom'))
-pot.pos = (800, 465)
-pots = []
 
 gameover_bg = Actor("gameover_bg", anchor=('middle', 'bottom'))
 win_bg = Actor("win_bg", anchor=('middle', 'bottom'))
@@ -88,8 +90,8 @@ clock.schedule_interval(animate_cat, 0.3)
 
 #life count
 heart = Actor("heart")
-live = 3 #live score variable
-score = 0 # create a sore variable
+live = 3 #lives variable
+score = 0 # create a score variable
 win_score = 10 #win/game over settings
 
 
@@ -111,6 +113,7 @@ for n in range(NUMBER_OF_BACKGROUND):#run twice becz. number of bg = 2 bg
 
 def draw():
     screen.clear()
+    global pot
 
     for bg in backgrounds_bottom:
         bg.draw()
@@ -130,6 +133,7 @@ def draw():
         for box in boxes:
             box.draw()
         
+
         for pot in pots:
             pot.draw()
 
@@ -174,10 +178,11 @@ def update(dt):
     if game_state == "intro":
         introscreen()
         return
-
-    next_pot_time = randint(1, 2)
-    next_box_time -= dt #enemies update
-
+    
+    if game_state == "win":
+        win()
+        return
+    
     next_box_time -= dt #enemies update
     next_knife_time -= dt
 
@@ -186,15 +191,6 @@ def update(dt):
         x -= GAME_SPEED/8 * -dt
         cat.pos = x, y
     
-        # random timing for pots
-    if next_pot_time == 2:
-        # add one pot to pots list
-        # pot.pos = WIDTH, GROUND
-        pots.append(pot)
-        for pot in pots:
-            x, y = pot.pos
-            x += GAME_SPEED/20 * -dt
-            pot.pos = x, y
 
     if next_knife_time <= 0:
         knife = Actor("knife", anchor=('left', 'bottom'))
@@ -241,7 +237,7 @@ def update(dt):
                 win = True
     # ---------------- SPAWN BOX ----------------
     if next_box_time <= 0:
-        box = Actor("box", anchor=('left', 'bottom'))
+        box = Actor("pot", anchor=('left', 'bottom'))
         box.pos = WIDTH, GROUND
         boxes.append(box)
         next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
@@ -319,13 +315,13 @@ def on_key_down(key):
 # Game states for making the screens
 def introscreen():
     global game_state
-    if pygame.time.get_ticks() - start_time > 6000:
+    if pygame.time.get_ticks() - start_time > 1000:
         game_state = "game"
 
-# def win():
-#     global game_state
-#     if 
-#         game_state = "win"
+def win():
+    global game_state
+    if (score == 3):
+        game_state = "win"
 
 # def gameover():
 #     global game_state
