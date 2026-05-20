@@ -195,8 +195,11 @@ def update(dt):
         box.pos = x, y
 
         if box.colliderect(hero):
-            score += 1
+            live -= 1
             boxes.remove(box)
+            if live == 0:
+                pass
+                # implémenter le game over
            
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
