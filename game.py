@@ -200,6 +200,10 @@ def update(dt):
             if live == 0:
                 pass
                 # implémenter le game over
+
+        elif box.pos[0] <= -32: 
+            boxes.remove(box)
+            score += 1
            
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
