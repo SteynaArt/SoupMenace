@@ -4,7 +4,7 @@
 from random import randint
 from pgzero.actor import Actor
 import pgzrun
-# coucou ça merge ? conflit
+# coucou ça merge ? CONFLIT
 # hero initialisation
 import pygame # for introscreen time count
 
@@ -241,8 +241,15 @@ def update(dt):
         box.pos = x, y
 
         if box.colliderect(hero):
-            score += 1
+            live -= 1
             boxes.remove(box)
+            if live == 0:
+                pass
+                # implémenter le game over
+
+        elif box.pos[0] <= -32: 
+            boxes.remove(box)
+            score += 1
            
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
