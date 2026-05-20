@@ -12,7 +12,7 @@ HEIGHT = 600
 
 #game phtsics & settings - Groung & Gravity
 GROUND = 464 # y-position hero stand here (height 600)
-GRAVITY = 200 #Pulls the hero downward after jumping
+GRAVITY = 700 #Pulls the hero downward after jumping
 
 NUMBER_OF_BACKGROUND = 2  #2 bg
 GAME_SPEED = 100 # speed of game movement
@@ -40,14 +40,14 @@ hero.pos = (64, GROUND) #place hero at x = 64, y = G
 hero_speed = 0 #means hero can not move vertically
 
 hero_image = ["leek1", "leek2", "leek3"]  #these 3 image stored for animation(gif)
-image_index = 0 #use this variable for hero,This keeps track of which image is currently being shown.
+hero_image_index = 0 #use this variable for hero,This keeps track of which image is currently being shown.
 
 def animate_hero():#Defines a function that changes the hero’s image
-    global image_index #Without global, Python would think image_index is a new local variable inside the function.
-    image_index += 1 #each time moves to nex image frame,0 -> 1-> 2->....
-    if image_index >= len(hero_image): # hero img. 3 - it will valid until image_index reset back to 0
-        image_index = 0
-    hero.image = hero_image[image_index] #change the hero current image
+    global hero_image_index #Without global, Python would think image_index is a new local variable inside the function.
+    hero_image_index += 1 #each time moves to nex image frame,0 -> 1-> 2->....
+    if hero_image_index >= len(hero_image): # hero img. 3 - it will valid until image_index reset back to 0
+        hero_image_index = 0
+    hero.image = hero_image[hero_image_index] #change the hero current image
 
 clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
 
@@ -57,13 +57,14 @@ cat = Actor("cat1", anchor=('middle', 'bottom'))
 cat.pos = (-200, 365) 
 
 cat_sprite = ["cat1", "cat2", "cat3", "cat4", "cat5"]
+cat_sprite_index = 0
 
 def animate_cat():
-    global image_index
-    image_index += 1
-    if image_index >= len(cat_sprite):
-        image_index = 0
-    cat.image = cat_sprite[image_index]
+    global cat_sprite_index
+    cat_sprite_index += 1
+    if cat_sprite_index >= len(cat_sprite):
+        cat_sprite_index = 0
+    cat.image = cat_sprite[cat_sprite_index]
 
 clock.schedule_interval(animate_cat, 0.5) 
 
