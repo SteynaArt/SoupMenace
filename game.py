@@ -26,11 +26,11 @@ KNIFE_MIN_HEIGHT = 20 # minimum height box can go up
 KNIFE_MAX_HEIGHT = 300 # maximum height box can go up
 
 # enemies initialisations
-KNIFE_APPARTION = (5, 9) # enemy boxes appear every 2 to 5 second rendomly
+KNIFE_APPARTION = (7, 10) # enemy boxes appear every 2 to 5 second rendomly
 next_knife_time = randint(KNIFE_APPARTION[0], KNIFE_APPARTION[1])  #Chooses random starting spawn time
 knifes = []
 
-BOX_APPARTION = (2, 5)
+BOX_APPARTION = (4, 5)
 next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 boxes = []
 
