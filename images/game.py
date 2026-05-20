@@ -1,4 +1,4 @@
- # game data
+# game data
 
 #from argparse import Action
 from random import randint
@@ -6,7 +6,6 @@ from pgzero.actor import Actor
 import pgzrun
 # coucou ça merge ? CONFLIT
 # hero initialisation
-import pygame # for introscreen time count
 
 WIDTH = 800
 HEIGHT = 600
@@ -21,9 +20,6 @@ GAME_SPEED = 100 # speed of game movement
 JUMP_SPEED = 200 #upward speed when hero jump
 JUMP_HEIGHT = 300 #height of the hero's jump
 
-game_state = "intro"
-start_time = 0
-
 #1.Anemy box movement up-down 
 KNIFE_UP_DOWN_SPEED = 120 # speed of box up-down movement
 KNIFE_MIN_HEIGHT = 20 # minimum height box can go up
@@ -34,7 +30,7 @@ KNIFE_APPARTION = (5, 9) # enemy boxes appear every 2 to 5 second rendomly
 next_knife_time = randint(KNIFE_APPARTION[0], KNIFE_APPARTION[1])  #Chooses random starting spawn time
 knifes = []
 
-BOX_APPARTION = (4, 10)
+BOX_APPARTION = (2, 5)
 next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 boxes = []
 
@@ -44,21 +40,16 @@ hero.pos = (64, GROUND) #place hero at x = 64, y = G
 hero_speed = 0 #means hero can not move vertically
 
 hero_image = ["leek1", "leek2", "leek3"]  #these 3 image stored for animation(gif)
-hero_image_index = 0 #use this variable for hero,This keeps track of which image is currently being shown.
+image_index = 0 #use this variable for hero,This keeps track of which image is currently being shown.
 
 def animate_hero():#Defines a function that changes the hero’s image
-    global hero_image_index #Without global, Python would think image_index is a new local variable inside the function.
-    hero_image_index += 1 #each time moves to nex image frame,0 -> 1-> 2->....
-    if hero_image_index >= len(hero_image): # hero img. 3 - it will valid until image_index reset back to 0
-        hero_image_index = 0
-    hero.image = hero_image[hero_image_index] #change the hero current image
+    global image_index #Without global, Python would think image_index is a new local variable inside the function.
+    image_index += 1 #each time moves to nex image frame,0 -> 1-> 2->....
+    if image_index >= len(hero_image): # hero img. 3 - it will valid until image_index reset back to 0
+        image_index = 0
+    hero.image = hero_image[image_index] #change the hero current image
 
 clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
-
-# Pots init
-pot = Actor("pot", anchor=('left', 'bottom'))
-pot.pos = (800, 465)
-pots = []
 
 #------------------------------------------ CAT SPRITES ------------------------------------------------
 
@@ -66,16 +57,15 @@ cat = Actor("cat1", anchor=('middle', 'bottom'))
 cat.pos = (-200, 365) 
 
 cat_sprite = ["cat1", "cat2", "cat3", "cat4", "cat5"]
-cat_sprite_index = 0
 
 def animate_cat():
-    global cat_sprite_index
-    cat_sprite_index += 1
-    if cat_sprite_index >= len(cat_sprite):
-        cat_sprite_index = 0
-    cat.image = cat_sprite[cat_sprite_index]
+    global image_index
+    image_index += 1
+    if image_index >= len(cat_sprite):
+        image_index = 0
+    cat.image = cat_sprite[image_index]
 
-clock.schedule_interval(animate_cat, 0.3) 
+clock.schedule_interval(animate_cat, 0.5) 
 
 #---------------------------------------Life Sprite---------------------------------------------------------
 
@@ -110,47 +100,30 @@ def draw():
 
     for bg in backgrounds_top:
         bg.draw()
+
+    cat.draw()
+
+    for box in boxes:
+        box.draw()
+
+    for knife in knifes:
+        knife.draw()
+
+
+    hero.draw()
+
+    #Life(heart)position 
+    for i in range(live):
+        heart.pos = (WIDTH - 30 - i*30,30)# last 30 is height consider top right (-30 is bottom right)
+        #heart.width = 25
+        #heart.height = 25
+        heart.draw()
     
-    if game_state == "intro":
-        screen.draw.text("SoupMenace", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=60, color="hotpink")
-        screen.draw.text("LEZGO", center=(WIDTH/2, HEIGHT/2), fontname="nirakolu", fontsize=90, color="plum1")
-        screen.draw.text("Little leek, you might end up in tonight soup \n Get awaaaay", center=(WIDTH/2, HEIGHT/1.3), fontname="nirakolu", fontsize=25, color="yellow2")
-
-    elif game_state == "game":
-
-        cat.draw()
-
-        for box in boxes:
-            box.draw()
-        
-        for pot in pots:
-            pot.draw()
-
-        for knife in knifes:
-            knife.draw()
-
-
-        hero.draw()
-
-        #Life(heart)position 
-        for i in range(live):
-            heart.pos = (WIDTH - 30 - i*30,30)# last 30 is height consider top right (-30 is bottom right)
-            #heart.width = 25
-            #heart.height = 25
-            heart.draw()
-        
-        ###draw score
-        screen.draw.text(
-            "Score: " + str(score), 
-            (10, 10), color="white", 
-            fontsize=30)
-    elif game_state == "win":
-        screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
-        screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=100, color="hotpink")
-        
-    elif game_state == "over":
-        screen.draw.text("GAME", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
-        screen.draw.text("OVER", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=60, color="black")
+    ###draw score
+    screen.draw.text(
+        "Score: " + str(score), 
+        (10, 10), color="white", 
+        fontsize=30)
    
 
 # ---------------- UPDATE ----------------
@@ -158,14 +131,7 @@ def update(dt):
 
     # enemies update
     # box
-    global pot, next_box_time, next_knife_time, hero_speed, live, score
-
-    if game_state == "intro":
-        introscreen()
-        return
-
-    next_pot_time = randint(1, 2)
-    next_box_time -= dt #enemies update
+    global next_box_time, next_knife_time, hero_speed, live, score
 
     next_box_time -= dt #enemies update
     next_knife_time -= dt
@@ -174,16 +140,6 @@ def update(dt):
         x, y = cat.pos
         x -= GAME_SPEED/8 * -dt
         cat.pos = x, y
-    
-        # random timing for pots
-    if next_pot_time == 2:
-        # add one pot to pots list
-        # pot.pos = WIDTH, GROUND
-        pots.append(pot)
-        for pot in pots:
-            x, y = pot.pos
-            x += GAME_SPEED/20 * -dt
-            pot.pos = x, y
 
     if next_knife_time <= 0:
         knife = Actor("knife", anchor=('left', 'bottom'))
@@ -301,22 +257,6 @@ def on_key_down(key):
         #if hero.y == GROUND: #the single jump
         if key == keys.SPACE and hero.y >= GROUND: # the single jump
             hero_speed = JUMP_HEIGHT
-
-# Game states for making the screens
-def introscreen():
-    global game_state
-    if pygame.time.get_ticks() - start_time > 6000:
-        game_state = "game"
-
-# def win():
-#     global game_state
-#     if 
-#         game_state = "win"
-
-# def gameover():
-#     global game_state
-#     if 
-#         game_state = "over"
 
 
 pgzrun.go()
