@@ -20,6 +20,9 @@ GAME_SPEED = 100 # speed of game movement
 JUMP_SPEED = 200 #upward speed when hero jump
 JUMP_HEIGHT = 300 #height of the hero's jump
 
+game_state = "intro"
+start_time = 0
+
 #1.Anemy box movement up-down 
 KNIFE_UP_DOWN_SPEED = 120 # speed of box up-down movement
 KNIFE_MIN_HEIGHT = 20 # minimum height box can go up
@@ -50,6 +53,11 @@ def animate_hero():#Defines a function that changes the hero’s image
     hero.image = hero_image[image_index] #change the hero current image
 
 clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
+
+# Pots init
+pot = Actor("pot", anchor=('left', 'bottom'))
+pot.pos = (800, 465)
+pots = []
 
 #------------------------------------------ CAT SPRITES ------------------------------------------------
 
@@ -100,30 +108,44 @@ def draw():
 
     for bg in backgrounds_top:
         bg.draw()
-
-    cat.draw()
-
-    for box in boxes:
-        box.draw()
-
-    for knife in knifes:
-        knife.draw()
-
-
-    hero.draw()
-
-    #Life(heart)position 
-    for i in range(live):
-        heart.pos = (WIDTH - 30 - i*30,30)# last 30 is height consider top right (-30 is bottom right)
-        #heart.width = 25
-        #heart.height = 25
-        heart.draw()
     
-    ###draw score
-    screen.draw.text(
-        "Score: " + str(score), 
-        (10, 10), color="white", 
-        fontsize=30)
+    if game_state == "intro":
+        screen.draw.text("SoupMenace", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=60, color="hotpink")
+        screen.draw.text("LEZGO", center=(WIDTH/2, HEIGHT/2), fontname="nirakolu", fontsize=90, color="plum1")
+        screen.draw.text("Little leek, you might end up in tonight soup \n Get awaaaay", center=(WIDTH/2, HEIGHT/1.3), fontname="nirakolu", fontsize=25, color="yellow2")
+
+    elif game_state == "game":
+
+        cat.draw()
+
+        for box in boxes:
+            box.draw()
+
+        for knife in knifes:
+            knife.draw()
+
+
+        hero.draw()
+
+        #Life(heart)position 
+        for i in range(live):
+            heart.pos = (WIDTH - 30 - i*30,30)# last 30 is height consider top right (-30 is bottom right)
+            #heart.width = 25
+            #heart.height = 25
+            heart.draw()
+        
+        ###draw score
+        screen.draw.text(
+            "Score: " + str(score), 
+            (10, 10), color="white", 
+            fontsize=30)
+    elif game_state == "win":
+        screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
+        screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=100, color="hotpink")
+        
+    elif game_state == "over":
+        screen.draw.text("GAME", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
+        screen.draw.text("OVER", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=60, color="black")
    
 
 # ---------------- UPDATE ----------------
@@ -132,6 +154,10 @@ def update(dt):
     # enemies update
     # box
     global next_box_time, next_knife_time, hero_speed, live, score
+
+    if game_state == "intro":
+        introscreen()
+        eturn
 
     next_box_time -= dt #enemies update
     next_knife_time -= dt
@@ -250,6 +276,22 @@ def on_key_down(key):
         #if hero.y == GROUND: #the single jump
         if key == keys.SPACE and hero.y >= GROUND: # the single jump
             hero_speed = JUMP_HEIGHT
+            
+# Game states for making the screens
+def introscreen():
+    global game_state
+    if pygame.time.get_ticks() - start_time > 6000:
+        game_state = "game"
+
+# def win():
+#     global game_state
+#     if 
+#         game_state = "win"
+
+# def gameover():
+#     global game_state
+#     if 
+#         game_state = "over"
 
 
 pgzrun.go()
