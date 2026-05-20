@@ -25,6 +25,8 @@ JUMP_HEIGHT = 300 #height of the hero's jump
 
 game_state = "intro"
 start_time = 0
+game_over = False
+win = False
 
 #1.Anemy box movement up-down 
 KNIFE_UP_DOWN_SPEED = 120 # speed of box up-down movement
@@ -146,13 +148,15 @@ def draw():
             "Score: " + str(score), 
             (10, 10), color="white", 
             fontsize=30)
-    elif game_state == "win":
-        screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
-        screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=100, color="hotpink")
         
-    elif game_state == "over":
+    if game_over == True:
         screen.draw.text("GAME", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("OVER", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=60, color="black")
+        
+    if win == True:
+        screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
+        screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=100, color="hotpink")
+        
    
 
 # ---------------- UPDATE ----------------
@@ -160,7 +164,7 @@ def update(dt):
 
     # enemies update
     # box
-    global pot, next_box_time, next_knife_time, hero_speed, live, score
+    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win
 
     if game_state == "intro":
         introscreen()
@@ -222,12 +226,14 @@ def update(dt):
             live -= 1
             knifes.remove(knife)
 
-            if live <= 0:
-                exit()
+            if live == 0:
+                game_over = True
         
         elif knife.pos[0] <= -32: # elif knife.x <= -50:
             knifes.remove(knife)
             score += 1
+            if score == 10:
+                win = True
     # ---------------- SPAWN BOX ----------------
     if next_box_time <= 0:
         box = Actor("box", anchor=('left', 'bottom'))
@@ -244,12 +250,13 @@ def update(dt):
             live -= 1
             boxes.remove(box)
             if live == 0:
-                pass
-                # implémenter le game over
+                game_over = True
 
         elif box.pos[0] <= -32: 
             boxes.remove(box)
             score += 1
+            if score == 10:
+                win = True
            
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
