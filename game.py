@@ -66,7 +66,7 @@ def animate_cat():
         cat_sprite_index = 0
     cat.image = cat_sprite[cat_sprite_index]
 
-clock.schedule_interval(animate_cat, 0.5) 
+clock.schedule_interval(animate_cat, 0.3) 
 
 #---------------------------------------Life Sprite---------------------------------------------------------
 
