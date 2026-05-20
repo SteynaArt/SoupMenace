@@ -4,7 +4,7 @@
 from random import randint
 from pgzero.actor import Actor
 import pgzrun
-# coucou ça merge ?
+# coucou ça merge ? CONFLIT
 # hero initialisation
 
 WIDTH = 800
