@@ -64,6 +64,9 @@ pot = Actor("pot", anchor=('left', 'bottom'))
 pot.pos = (800, 465)
 pots = []
 
+gameover_bg = Actor("gameover_bg", anchor=('middle', 'bottom'))
+win_bg = Actor("win_bg", anchor=('middle', 'bottom'))
+
 #------------------------------------------ CAT SPRITES ------------------------------------------------
 
 cat = Actor("cat1", anchor=('middle', 'bottom')) 
@@ -150,10 +153,12 @@ def draw():
             fontsize=30)
         
     if game_over == True:
+        gameover_bg.draw()
         screen.draw.text("GAME", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("OVER", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=60, color="black")
         
     if win == True:
+        win_bg.draw()
         screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=100, color="hotpink")
         
