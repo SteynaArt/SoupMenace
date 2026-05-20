@@ -21,7 +21,7 @@ NUMBER_OF_BACKGROUND = 2  #2 bg
 GAME_SPEED = 100 # speed of game movement
 
 JUMP_SPEED = 200 #upward speed when hero jump
-JUMP_HEIGHT = 300 #height of the hero's jump
+JUMP_HEIGHT = 360 #height of the hero's jump
 
 game_state = "intro"
 start_time = 0
@@ -38,7 +38,7 @@ KNIFE_APPARTION = (5, 9) # enemy boxes appear every 2 to 5 second rendomly
 next_knife_time = randint(KNIFE_APPARTION[0], KNIFE_APPARTION[1])  #Chooses random starting spawn time
 knifes = []
 
-BOX_APPARTION = (4, 10)
+BOX_APPARTION = (6, 10)
 next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 boxes = []
 
