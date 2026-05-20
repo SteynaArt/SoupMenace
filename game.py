@@ -80,8 +80,8 @@ clock.schedule_interval(animate_cat, 0.5)
 
 #life count
 heart = Actor("heart")
-live = 3 #live score variable
-score = 0 # create a sore variable
+live = 3 #lives variable
+score = 0 # create a score variable
 win_score = 10 #win/game over settings
 
 
@@ -143,6 +143,7 @@ def draw():
             "Score: " + str(score), 
             (10, 10), color="white", 
             fontsize=30)
+        
     elif game_state == "win":
         screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=100, color="hotpink")
@@ -162,10 +163,11 @@ def update(dt):
     if game_state == "intro":
         introscreen()
         return
-
-    next_pot_time = randint(1, 2)
-    next_box_time -= dt #enemies update
-
+    
+    if game_state == "win":
+        win()
+        return
+    
     next_box_time -= dt #enemies update
     next_knife_time -= dt
 
@@ -175,6 +177,7 @@ def update(dt):
         cat.pos = x, y
     
         # random timing for pots
+    next_pot_time = randint(1, 2)
     if next_pot_time == 2:
         # add one pot to pots list
         # pot.pos = WIDTH, GROUND
@@ -297,13 +300,13 @@ def on_key_down(key):
 # Game states for making the screens
 def introscreen():
     global game_state
-    if pygame.time.get_ticks() - start_time > 6000:
+    if pygame.time.get_ticks() - start_time > 1000:
         game_state = "game"
 
-# def win():
-#     global game_state
-#     if 
-#         game_state = "win"
+def win():
+    global game_state
+    if (score == 3):
+        game_state = "win"
 
 # def gameover():
 #     global game_state
