@@ -1,4 +1,4 @@
-# game data
+ # game data
 
 #from argparse import Action
 from random import randint
