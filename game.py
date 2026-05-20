@@ -6,6 +6,7 @@ from pgzero.actor import Actor
 import pgzrun
 # coucou ça merge ? conflit
 # hero initialisation
+import pygame # for introscreen time count
 
 WIDTH = 800
 HEIGHT = 600
@@ -120,6 +121,9 @@ def draw():
 
         for box in boxes:
             box.draw()
+        
+        for pot in pots:
+            pot.draw()
 
         for knife in knifes:
             knife.draw()
@@ -153,11 +157,14 @@ def update(dt):
 
     # enemies update
     # box
-    global next_box_time, next_knife_time, hero_speed, live, score
+    global pot, next_box_time, next_knife_time, hero_speed, live, score
 
     if game_state == "intro":
         introscreen()
-        eturn
+        return
+
+    next_pot_time = randint(1, 2)
+    next_box_time -= dt #enemies update
 
     next_box_time -= dt #enemies update
     next_knife_time -= dt
@@ -166,6 +173,16 @@ def update(dt):
         x, y = cat.pos
         x -= GAME_SPEED/8 * -dt
         cat.pos = x, y
+    
+        # random timing for pots
+    if next_pot_time == 2:
+        # add one pot to pots list
+        # pot.pos = WIDTH, GROUND
+        pots.append(pot)
+        for pot in pots:
+            x, y = pot.pos
+            x += GAME_SPEED/20 * -dt
+            pot.pos = x, y
 
     if next_knife_time <= 0:
         knife = Actor("knife", anchor=('left', 'bottom'))
@@ -276,7 +293,7 @@ def on_key_down(key):
         #if hero.y == GROUND: #the single jump
         if key == keys.SPACE and hero.y >= GROUND: # the single jump
             hero_speed = JUMP_HEIGHT
-            
+
 # Game states for making the screens
 def introscreen():
     global game_state
