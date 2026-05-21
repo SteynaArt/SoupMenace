@@ -60,6 +60,8 @@ pause_bg = Actor("pause_bg1", anchor=('middle', 'bottom'))
 pause_bg.pos = (400, 500)
 pause = False
 
+running = True
+
 #---------------------------- hero initialisation-------------------------
 hero = Actor("leek1", anchor=('middle', 'bottom')) # here leek1 is starting image
 hero.pos = (64, GROUND) #place hero at x = 64, y = G
@@ -174,15 +176,22 @@ def draw():
         screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=100, color="hotpink")
 
-   
+    print(pause)
+    if pause:
+        pause_bg.draw()
+        screen.draw.text("PAUSED", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=100, color="plum1")
+        screen.draw.text("- - - - - - - - - - - - - - - - - - - - - - - - - - - -", center=(WIDTH/2, HEIGHT/2.2), fontname="nirakolu", fontsize=20, color="plum1")
+        screen.draw.text("Press c to continue", center=(WIDTH/2, HEIGHT/1.8), fontname="appleberry", fontsize=40, color="yellow2")
+        screen.draw.text("Press r to restart", center=(WIDTH/2, HEIGHT/1.6), fontname="appleberry", fontsize=40, color="yellow2")
+
+            
 
 # ---------------- UPDATE ----------------
 def update(dt):
 
-    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win, pause
+    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win, pause, running
 
-    pause = False
-    
+
 
     if game_state == "intro":
         introscreen()
@@ -328,26 +337,23 @@ def on_key_down(key):
     if key == pygame.K_c:
         continue_game()
 
+    #if key == pygame.K_r:
+        #restart()
+
+# teeeeest 
 def paused():
+    global pause, running
     pause = True
-
-    pause_bg.draw()
-    screen.draw.text("PAUSED", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=100, color="plum1")
-    screen.draw.text("- - - - - - - - - - - - - - - - - - - - - - - - - - - -", center=(WIDTH/2, HEIGHT/2.2), fontname="nirakolu", fontsize=20, color="plum1")
-    screen.draw.text("Press c to continue", center=(WIDTH/2, HEIGHT/1.8), fontname="appleberry", fontsize=40, color="yellow2")
-    screen.draw.text("Press r to restart", center=(WIDTH/2, HEIGHT/1.6), fontname="appleberry", fontsize=40, color="yellow2")
-
-    while pause:
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-                
+    running = False
+    
 def continue_game():
-    global pause
+    global pause, running
     pause = False
+    running = True
 
+#def restart():
+    #global pause, running
+    #pause = False
 
 
 
