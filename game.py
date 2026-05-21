@@ -14,7 +14,7 @@ WIDTH = 800
 HEIGHT = 600
 
 #game phtsics & settings - Groung & Gravity
-GROUND = 464 # y-position hero stand here (height 600)
+GROUND = 500 # y-position hero stand here (height 600)
 GRAVITY = 200 #Pulls the hero downward after jumping
 
 NUMBER_OF_BACKGROUND = 2  #2 bg
@@ -49,8 +49,8 @@ pot.pos = (800, GROUND)
 pots = []
 
 #---------------------------- hero initialisation-------------------------
-hero = Actor("leek1", anchor=('middle', 'bottom')) # here leek1 is starting image
-hero.pos = (64, GROUND) #place hero at x = 64, y = G
+hero = Actor("leek1", anchor=('right', 'bottom')) # here leek1 is starting image
+hero.pos = (200, GROUND) #place hero at x = 64, y = G
 hero_speed = 0 #means hero can not move vertically
 
 hero_image = ["leek1", "leek2", "leek3"]  #these 3 image stored for animation(gif)
@@ -171,8 +171,6 @@ def draw():
 # ---------------- UPDATE ----------------
 def update(dt):
 
-    # enemies update
-    # box
     global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win
 
     if game_state == "intro":
@@ -183,7 +181,7 @@ def update(dt):
         win()
         return
     
-    next_box_time -= dt #enemies update
+    next_box_time -= dt
     next_knife_time -= dt
 
     for i in cat:
@@ -221,13 +219,12 @@ def update(dt):
             knife.direction = -1
 
         knife.pos = (x, y)
-
-
+        a, b = hero.pos
         if knife.colliderect(hero):
             live -= 1
             knifes.remove(knife)
 
-            if live == 0:
+            if live == 0 :
                 game_over = True
         
         elif knife.pos[0] <= -32: # elif knife.x <= -50:
@@ -242,26 +239,30 @@ def update(dt):
         boxes.append(box)
         next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 
+
     for box in boxes[:]:
         x, y = box.pos
         x -= GAME_SPEED * dt
         box.pos = x, y
+        a, b = hero.pos
 
-        if box.colliderect(hero):
-            live -= 1
-            boxes.remove(box)
-            if live == 0:
-                game_over = True
-
-        elif box.pos[0] <= -32: 
+        if box.pos[0] <= -32: 
             boxes.remove(box)
             score += 1
             if score == 10:
-                win = True
-           
+                    win = True    
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
-           
+        elif box.colliderect(hero):
+            #si les deux se rencotrent, la position y hero et la même que y box
+            print("hero x")
+            print(a)
+            print("box x")
+            print(x)
+            a = x
+            hero.pos = a,b
+            if a < -29:
+                game_over = True
 
     ### hero update
     #global hero_speed
