@@ -38,15 +38,24 @@ KNIFE_APPARTION = (5, 9) # enemy boxes appear every 2 to 5 second rendomly
 next_knife_time = randint(KNIFE_APPARTION[0], KNIFE_APPARTION[1])  #Chooses random starting spawn time
 knifes = []
 
+# Pot / Pots list init
 BOX_APPARTION = (2, 8)
 next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
+box = Actor("pot2", anchor=('left', 'bottom'))
+box.pos = WIDTH, GROUND
 boxes = []
 
-# Pot / Pots list init
-POT_APPARTION = (2, 5)
-pot = Actor("pot", anchor=('left', 'bottom'))
-pot.pos = (800, GROUND)
-pots = []
+box_image = ["pot2", "pot_c"]
+box_image_index = 0
+
+def animate_box():
+    global box_image_index
+    box_image_index += 1 
+    if box_image_index >= len(box_image):
+        box_image_index = 0
+    box.image = box_image[box_image_index]
+
+clock.schedule_interval(animate_box, 0.4)
 
 #---------------------------- hero initialisation-------------------------
 hero = Actor("leek1", anchor=('right', 'bottom')) # here leek1 is starting image
@@ -63,7 +72,7 @@ def animate_hero():#Defines a function that changes the hero’s image
         hero_image_index = 0
     hero.image = hero_image[hero_image_index] #change the hero current image
 
-clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
+clock.schedule_interval(animate_hero, 0.2) #every 0.2 seconds, play the function "animate_hero"
 
 
 gameover_bg = Actor("gameover_bg", anchor=('middle', 'bottom'))
@@ -113,7 +122,6 @@ for n in range(NUMBER_OF_BACKGROUND):#run twice becz. number of bg = 2 bg
 
 def draw():
     screen.clear()
-    global pot
 
     for bg in backgrounds_bottom:
         bg.draw()
@@ -127,21 +135,14 @@ def draw():
         screen.draw.text("Little leek, you might end up in tonight soup \n Get awaaaay", center=(WIDTH/2, HEIGHT/1.3), fontname="nirakolu", fontsize=25, color="yellow2")
 
     elif game_state == "game":
-
         cat.draw()
+        hero.draw()
 
         for box in boxes:
             box.draw()
-        
-
-        for pot in pots:
-            pot.draw()
 
         for knife in knifes:
             knife.draw()
-
-
-        hero.draw()
 
         #Life(heart)position 
         for i in range(live):
@@ -171,7 +172,7 @@ def draw():
 # ---------------- UPDATE ----------------
 def update(dt):
 
-    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win
+    global box, next_box_time, next_knife_time, hero_speed, live, score, game_over, win
 
     if game_state == "intro":
         introscreen()
@@ -234,8 +235,6 @@ def update(dt):
                 win = True
     # ---------------- SPAWN BOX ----------------
     if next_box_time <= 0:
-        box = Actor("pot", anchor=('left', 'bottom'))
-        box.pos = WIDTH, GROUND
         boxes.append(box)
         next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 
