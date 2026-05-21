@@ -10,6 +10,7 @@ import pgzrun
 # hero initialisation
 import pygame # for introscreen time count
 
+
 WIDTH = 800
 HEIGHT = 600
 
@@ -25,8 +26,6 @@ JUMP_HEIGHT = 360 #height of the hero's jump
 
 game_state = "intro"
 start_time = 0
-game_over = False
-win = False
 
 #1.Anemy box movement up-down 
 KNIFE_UP_DOWN_SPEED = 120 # speed of box up-down movement
@@ -48,6 +47,19 @@ pot = Actor("pot", anchor=('left', 'bottom'))
 pot.pos = (800, GROUND)
 pots = []
 
+# game over init
+gameover_bg = Actor("gameover_bg", anchor=('middle', 'bottom'))
+game_over = False
+
+# win init
+win_bg = Actor("win_bg", anchor=('middle', 'bottom'))
+win = False
+
+# pause init
+pause_bg = Actor("pause_bg1", anchor=('middle', 'bottom'))
+pause_bg.pos = (400, 500)
+pause = False
+
 #---------------------------- hero initialisation-------------------------
 hero = Actor("leek1", anchor=('middle', 'bottom')) # here leek1 is starting image
 hero.pos = (64, GROUND) #place hero at x = 64, y = G
@@ -64,10 +76,6 @@ def animate_hero():#Defines a function that changes the hero’s image
     hero.image = hero_image[hero_image_index] #change the hero current image
 
 clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
-
-
-gameover_bg = Actor("gameover_bg", anchor=('middle', 'bottom'))
-win_bg = Actor("win_bg", anchor=('middle', 'bottom'))
 
 #------------------------------------------ CAT SPRITES ------------------------------------------------
 
@@ -165,15 +173,16 @@ def draw():
         win_bg.draw()
         screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=100, color="hotpink")
-        
+
    
 
 # ---------------- UPDATE ----------------
 def update(dt):
 
-    # enemies update
-    # box
-    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win
+    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win, pause
+
+    pause = False
+    
 
     if game_state == "intro":
         introscreen()
@@ -182,6 +191,7 @@ def update(dt):
     if game_state == "win":
         win()
         return
+    
     
     next_box_time -= dt #enemies update
     next_knife_time -= dt
@@ -196,7 +206,7 @@ def update(dt):
         knife = Actor("knife", anchor=('left', 'bottom'))
         knife.pos = (WIDTH, GROUND)
 
-         # 2.Enemy OX RANDOM UP-DOWN MOVEMENT
+        # 2.Enemy OX RANDOM UP-DOWN MOVEMENT
         knife.direction = -1 # -1 means box starts going up first
         knife.jump_height = randint(KNIFE_MIN_HEIGHT,KNIFE_MAX_HEIGHT) # each box gets different height
         knifes.append(knife)
@@ -210,12 +220,12 @@ def update(dt):
         #Box random up-down movement, box goes-up
         y += knife.direction * KNIFE_UP_DOWN_SPEED * dt #Move box up-down
 
-         # If box reaches its own random top height, then move down
+        # If box reaches its own random top height, then move down
         if y <= GROUND - knife.jump_height:
             y = GROUND - knife.jump_height
             knife.direction = 1
-       
-       # If box reaches ground again, then move up
+    
+    # If box reaches ground again, then move up
         if y >= GROUND:
             y = GROUND
             knife.direction = -1
@@ -258,10 +268,10 @@ def update(dt):
             score += 1
             if score == 10:
                 win = True
-           
+        
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
-           
+        
 
     ### hero update
     #global hero_speed
@@ -298,7 +308,7 @@ def update(dt):
 
 
 def on_key_down(key):
-    global hero_speed
+    global hero_speed, pause
 
     # jump
     if key == keys.SPACE:
@@ -312,16 +322,45 @@ def on_key_down(key):
         if key == keys.SPACE and hero.y >= GROUND: # the single jump
             hero_speed = JUMP_HEIGHT
 
+    if key == pygame.K_p:
+        paused()
+
+    if key == pygame.K_c:
+        continue_game()
+
+def paused():
+    pause = True
+
+    pause_bg.draw()
+    screen.draw.text("PAUSED", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=100, color="plum1")
+    screen.draw.text("- - - - - - - - - - - - - - - - - - - - - - - - - - - -", center=(WIDTH/2, HEIGHT/2.2), fontname="nirakolu", fontsize=20, color="plum1")
+    screen.draw.text("Press c to continue", center=(WIDTH/2, HEIGHT/1.8), fontname="appleberry", fontsize=40, color="yellow2")
+    screen.draw.text("Press r to restart", center=(WIDTH/2, HEIGHT/1.6), fontname="appleberry", fontsize=40, color="yellow2")
+
+    while pause:
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+def continue_game():
+    global pause
+    pause = False
+
+
+
+
 # Game states for making the screens
 def introscreen():
     global game_state
     if pygame.time.get_ticks() - start_time > 1000:
         game_state = "game"
 
-def win():
-    global game_state
-    if (score == 3):
-        game_state = "win"
+#def win():
+    #global game_state
+    #if (score == 3):
+        #game_state = "win"
 
 # def gameover():
 #     global game_state
