@@ -320,7 +320,7 @@ def on_key_down(key):
 # Game states for making the screens
 def introscreen():
     global game_state
-    if pygame.time.get_ticks() - start_time > 1000:
+    if pygame.time.get_ticks() - start_time > 6000:
         game_state = "game"
 
 def win():
