@@ -253,12 +253,8 @@ def update(dt):
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
         elif box.colliderect(hero):
-            #si les deux se rencotrent, la position y hero et la même que y box
-            print("hero x")
-            print(a)
-            print("box x")
-            print(x)
             a = x
+            #si les deux se rencotrent, la position y hero et la même que y box
             hero.pos = a,b
             if a < -29:
                 game_over = True
@@ -297,20 +293,29 @@ def update(dt):
         backgrounds_top.append(bg)
 
 
+secondjump = False
+jump = False
+nbjumps = 0
+
 def on_key_down(key):
-    global hero_speed
+    global hero_speed, nbjumps
 
-    # jump
-    if key == keys.SPACE:
+    if hero.y == GROUND:
+        nbjumps = 0
 
-
-        #if hero_speed <= 0:
-         #   hero_speed = JUMP_SPEED
-
-        #if hero_speed <= 0:
-        #if hero.y == GROUND: #the single jump
-        if key == keys.SPACE and hero.y >= GROUND: # the single jump
+    if (key == keys.SPACE) :
+        if (hero.y == GROUND): # the single jump
             hero_speed = JUMP_HEIGHT
+            nbjumps += 1
+    
+        elif hero.y < GROUND :
+            if nbjumps == 1:
+                hero_speed = JUMP_HEIGHT/2 # the double jump
+                nbjumps += 1
+            elif nbjumps >= 2:
+                pass
+    
+
 
 # Game states for making the screens
 def introscreen():
