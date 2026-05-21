@@ -1,5 +1,7 @@
  # game data
 
+# meow meow
+
 #from argparse import Action
 from random import randint
 from pgzero.actor import Actor
@@ -19,10 +21,12 @@ NUMBER_OF_BACKGROUND = 2  #2 bg
 GAME_SPEED = 100 # speed of game movement
 
 JUMP_SPEED = 200 #upward speed when hero jump
-JUMP_HEIGHT = 350 #height of the hero's jump
+JUMP_HEIGHT = 360 #height of the hero's jump
 
 game_state = "intro"
 start_time = 0
+game_over = False
+win = False
 
 #1.Anemy box movement up-down 
 KNIFE_UP_DOWN_SPEED = 120 # speed of box up-down movement
@@ -30,13 +34,19 @@ KNIFE_MIN_HEIGHT = 20 # minimum height box can go up
 KNIFE_MAX_HEIGHT = 300 # maximum height box can go up
 
 # enemies initialisations
-KNIFE_APPARTION = (6, 10) # enemy boxes appear every 2 to 5 second rendomly
+KNIFE_APPARTION = (5, 9) # enemy boxes appear every 2 to 5 second rendomly
 next_knife_time = randint(KNIFE_APPARTION[0], KNIFE_APPARTION[1])  #Chooses random starting spawn time
 knifes = []
 
-BOX_APPARTION = (6, 10)
+BOX_APPARTION = (2, 8)
 next_box_time = randint(BOX_APPARTION[0], BOX_APPARTION[1])
 boxes = []
+
+# Pot / Pots list init
+POT_APPARTION = (2, 5)
+pot = Actor("pot", anchor=('left', 'bottom'))
+pot.pos = (800, GROUND)
+pots = []
 
 #---------------------------- hero initialisation-------------------------
 hero = Actor("leek1", anchor=('middle', 'bottom')) # here leek1 is starting image
@@ -54,11 +64,6 @@ def animate_hero():#Defines a function that changes the hero’s image
     hero.image = hero_image[hero_image_index] #change the hero current image
 
 clock.schedule_interval(animate_hero, 0.2) #each 0.2 secondplay the function hero 
-
-# Pots init
-pot = Actor("pot", anchor=('left', 'bottom'))
-pot.pos = (800, 465)
-pots = []
 
 
 #------------------------------------------ CAT SPRITES ------------------------------------------------
@@ -82,8 +87,8 @@ clock.schedule_interval(animate_cat, 0.3)
 
 #life count
 heart = Actor("heart")
-live = 3 #live score variable
-score = 0 # create a sore variable
+live = 3 #lives variable
+score = 0 # create a score variable
 win_score = 10 #win/game over settings
 
 
@@ -105,6 +110,7 @@ for n in range(NUMBER_OF_BACKGROUND):#run twice becz. number of bg = 2 bg
 
 def draw():
     screen.clear()
+    global pot
 
     for bg in backgrounds_bottom:
         bg.draw()
@@ -124,16 +130,15 @@ def draw():
         for box in boxes:
             box.draw()
         
+
         for pot in pots:
             pot.draw()
 
         for knife in knifes:
             knife.draw()
 
-        hero.draw()
 
-        if win:
-            clap.draw()
+        hero.draw()
 
         #Life(heart)position 
         for i in range(live):
@@ -147,56 +152,32 @@ def draw():
             "Score: " + str(score), 
             (10, 10), color="white", 
             fontsize=30)
-    elif game_state == "win":
-        screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
-        screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/3.1), fontname="nirakolu", fontsize=100, color="hotpink")
-
         
-    elif game_state == "over":
+    if game_over == True:
         screen.draw.text("GAME", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
         screen.draw.text("OVER", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=60, color="black")
-
-
-#-----------------------------------------------------------------------------------------
-
-#-----------------------------------------------------------------------------------------
+        
+    if win == True:
+        screen.draw.text("You", center=(WIDTH/2, HEIGHT/3), fontname="nirakolu", fontsize=80, color="plum1")
+        screen.draw.text("WIIIN", center=(WIDTH/2, HEIGHT/2.01), fontname="nirakolu", fontsize=100, color="hotpink")
+        
    
-win = False
-clap = Actor("clap1", anchor=('middle', 'center')) 
-clap.pos = (400, 300) 
-clap_speed = 0
-
-clap_image = ["clap1", "clap2", "clap3", "clap4"]
-clap_image_index = 0
-
-def animate_clap():
-    global clap_image_index
-    clap_image_index += 1
-    if clap_image_index >= len(clap_image):
-        clap_image_index = 0
-    clap.image = clap_image[clap_image_index]
-
-clock.schedule_interval(animate_clap, 0.2) 
-
 
 # ---------------- UPDATE ----------------
 def update(dt):
 
     # enemies update
     # box
-    global pot, next_box_time, next_knife_time, hero_speed, live, score, win
+    global pot, next_box_time, next_knife_time, hero_speed, live, score, game_over, win
 
     if game_state == "intro":
         introscreen()
         return
     
-    if score == 10:
-        win = True
+    if game_state == "win":
+        win()
+        return
     
-
-    next_pot_time = randint(1, 2)
-    next_box_time -= dt #enemies update
-
     next_box_time -= dt #enemies update
     next_knife_time -= dt
 
@@ -205,15 +186,6 @@ def update(dt):
         x -= GAME_SPEED/8 * -dt
         cat.pos = x, y
     
-        # random timing for pots
-    if next_pot_time == 2:
-        # add one pot to pots list
-        # pot.pos = WIDTH, GROUND
-        pots.append(pot)
-        for pot in pots:
-            x, y = pot.pos
-            x += GAME_SPEED/20 * -dt
-            pot.pos = x, y
 
     if next_knife_time <= 0:
         knife = Actor("knife", anchor=('left', 'bottom'))
@@ -250,12 +222,14 @@ def update(dt):
             live -= 1
             knifes.remove(knife)
 
-            if live <= 0:
-                exit()
+            if live == 0:
+                game_over = True
         
         elif knife.pos[0] <= -32: # elif knife.x <= -50:
             knifes.remove(knife)
             score += 1
+            if score == 10:
+                win = True
     # ---------------- SPAWN BOX ----------------
     if next_box_time <= 0:
         box = Actor("pot", anchor=('left', 'bottom'))
@@ -272,12 +246,13 @@ def update(dt):
             live -= 1
             boxes.remove(box)
             if live == 0:
-                pass
-                # implémenter le game over
+                game_over = True
 
         elif box.pos[0] <= -32: 
             boxes.remove(box)
             score += 1
+            if score == 10:
+                win = True
            
         elif box.pos[0] <= -32: #elif box.x <= -50:
             boxes.remove(box)
@@ -317,7 +292,6 @@ def update(dt):
         backgrounds_top.append(bg)
 
 
-
 def on_key_down(key):
     global hero_speed
 
@@ -336,13 +310,13 @@ def on_key_down(key):
 # Game states for making the screens
 def introscreen():
     global game_state
-    if pygame.time.get_ticks() - start_time > 2000:
+    if pygame.time.get_ticks() - start_time > 1000:
         game_state = "game"
 
-# def win():
-#     global game_state
-#     if 
-#         game_state = "win"
+def win():
+    global game_state
+    if (score == 3):
+        game_state = "win"
 
 # def gameover():
 #     global game_state
